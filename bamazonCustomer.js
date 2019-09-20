@@ -9,14 +9,14 @@ var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'password',
-    database: 'cars_and_parts_db',
+    database: 'bamazon_db',
     port: 3306
 });
 
 var Table = require('cli-table');
 
 //.................................................
-connect.connect(function(err){
+connection.connect(function(err){
     if(err) throw err;
     console.log('connected as id' + connection.threadId); //need to be updated
     startShopping(); //line 24
@@ -49,11 +49,11 @@ function storeInventory() {
 
 	connection.query('SELECT * FROM Products', function(err, results){
 		
-        var table = new table({
+        var table = new Table({
             head: ['ID', 'ITEM', 'DEPARTMENT', 'PRICE', 'STOCK'],
             colWidths: [10, 30, 30, 20]
         });
-
+        console.log(table)
 		for (var i=0; i <results.length; i++) {
 
             var itemId = results[i].item_id,
@@ -71,7 +71,7 @@ function storeInventory() {
         }
         console.log("_________________________________________________________________________________________________");
         console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Bamazon Inventory^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        console.log(table.toString());
+        console.table(table);
         console.log("_________________________________________________________________________________________________");
 
 		customerPrompt(); //continueprompt
@@ -88,7 +88,7 @@ function customerPrompt() {
     }).then(function(answer) {
         switch(answer.action) {
             case 'Yes':
-                customerPrompt();
+                selectPrompt();
             break;
 
             case 'No':

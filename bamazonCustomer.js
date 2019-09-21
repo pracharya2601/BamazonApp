@@ -4,6 +4,7 @@ var mysql = require('mysql');
 // Load the NPM Package inquirer
 var inquirer = require("inquirer");
 
+
 // mysql -u root -p
 var connection = mysql.createConnection({
     host: 'localhost',
@@ -13,15 +14,11 @@ var connection = mysql.createConnection({
     port: 3306
 });
 
-var Table = require('cli-table');
-
-//.................................................
 connection.connect(function(err){
-    if(err) throw err;
-    console.log('connected as id' + connection.threadId); //need to be updated
-    startShopping(); //line 24
+    if (err) throw err;
+    console.log('connected as id ' + connection.threadId);
+    startShopping();
 });
-//.................................................
 
 function startShopping() { //start prompt
 
@@ -30,8 +27,7 @@ function startShopping() { //start prompt
 
             type: "confirm",
             name: "confirm",
-            message:"<<<<<\\\\\WELCOME TO BAMAZON /////>>>>>",
-            message:"||||------View our Inventory------||||",
+            message:"WELCOME TO BAMAZON ! WOULD YOU LIKE TO GOR FOR SHOPPING",
             default: true
 
 
@@ -44,42 +40,22 @@ function startShopping() { //start prompt
         });
 }
 
-
 function storeInventory() {
 
-	connection.query('SELECT * FROM Products', function(err, results){
-		
-        var table = new Table({
-            head: ['ID', 'ITEM', 'DEPARTMENT', 'PRICE', 'STOCK'],
-            colWidths: [10, 30, 30, 20]
-        });
-        console.log(table)
-		for (var i=0; i <results.length; i++) {
+    connection.query('SELECT * FROM Products', function(err, results){
 
-            var itemId = results[i].item_id,
-                productName = results[i].product_name,
-                departmentName = results[i].department_name,
-                price = results[i].price,
-                stockNum = results[i].stock_quantity;
+        console.log("-------------------------------------------------------------------------------");
+        console.log("|                             Bamazon Inventory                               |");
+        console.log("_______________________________________________________________________________");
+        console.table(results);
+        console.log("_______________________________________________________________________________");
 
-			table.push(
-
-                [itemId, productName, departmentName, price, stockNum]
-
-			);
-			
-        }
-        console.log("_________________________________________________________________________________________________");
-        console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Bamazon Inventory^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        console.table(table);
-        console.log("_________________________________________________________________________________________________");
-
-		customerPrompt(); //continueprompt
-	});
-
+        continuePrompt();
+        
+    });
 }
 
-function customerPrompt() {
+function continuePrompt() {
     inquirer.prompt({
         name: "action",
         type: "list",
@@ -99,66 +75,57 @@ function customerPrompt() {
     });
 }
 
-// Funtction to run the Iquirer package to prompt the customer for input
-function selectPrompt(){
+function selectPrompt() {
 
     inquirer.prompt([{
-        type: "input",
-        name: "inputId",
-        message: "Please enter the ID of the product you wish to purchase:",
 
-    },
-    {
-        type: "input",
-        name: "inputQuantity",
-        message: "Please enter the number of product unit you wish to purchase:",
-    
-    }])
-    .then(function(answer) {
+            type: "input",
+            name: "inputId",
+            message: "Please enter the ID of the product you wish to purchase:",
+        },
+        {
+            type: "input",
+            name: "inputNumber",
+            message: "Please enter the number of product unit you wish to purchase:",
 
-        var query = 'SELECT * FROM Products WHERE item_id=?';
+        }
+    ]).then(function(userPurchase) {
 
-        connection.query(query, answer.inputId, function(err, results) {
+        //connect to database to find stock_quantity in database. If user quantity input is greater than stock, decline purchase.
 
-            for (var i = 0; i < results.length; i++) {  
+        connection.query("SELECT * FROM products WHERE item_id=?", userPurchase.inputId, function(err, res) {
+            for (var i = 0; i < res.length; i++) {
 
-            	if ( answer.inputQuantity <= results[i].stock_quantity) {
-                    var a = results[i].product_name;
-                    var b = results[i].price;
-                    var c = results[i].answer.inputQuantity;
-                    var total = results[i].price * answer.inputQuantity;
+                if (userPurchase.inputNumber > res[i].stock_quantity) {
 
-                    var newStock = (results[i].stock_quantity - c);
-                    var purchaseId = (answer.inputId);
-
-                    
-
-                    //.........................................................................
-                    console.log("_________________________________________");
-                    console.log("Your selected item:");
-                    console.log("_________________________________________");
-                    console.log("Product name" + a +".");
-                    console.log("Cost per unit $" + b +".");
-                    console.log("Quantity"+ c +".");
-                    console.log("_________________________________________");
-                    console.log("Your total cost $" + total + ".");
-                    
-                    confirmOrder(newStock, purchaseId);
-
-            	} else {
-                    console.log('______________________');
-                    console.log("SORRY! Insufficent quantity!");
-                    console.log('______________________');
+                    console.log("-------------------------------------------------------");
+                    console.log("Out of Stock! Sorry! Thank You for shopping at BAMAZON");
+                    console.log("-------------------------------------------------------");
                     startShopping();
-                    
-            	}
+
+                } else {
+                    console.log("===================================================");
+                    console.log("||    Please Check the Order before Continue:    ||");
+                    console.log("===================================================");
+                    console.log("||    Item:                    " + res[i].product_name + "     ||");
+                    console.log("||    Department:                " + res[i].department_name + "     ||");
+                    console.log("||    Price:                          " + res[i].price + "     ||");
+                    console.log("||    Quantity:                       " + userPurchase.inputNumber + "          ||");
+                    console.log("===================================================");
+                    console.log("||    Total:                          " + res[i].price * userPurchase.inputNumber + "     ||");
+                    console.log("===================================================");
+
+                    var newStock = (res[i].stock_quantity - userPurchase.inputNumber);
+                    var purchaseId = (userPurchase.inputId);
+        
+                    confirmCheckout(newStock, purchaseId);
+                }
             }
         });
     });
-
 }
 
-function confirmOrder(newStock, purchaseId) {
+function confirmCheckout(newStock, purchaseID){
 
     inquirer.prompt({
         name: "action",
@@ -173,9 +140,17 @@ function confirmOrder(newStock, purchaseId) {
                 },{
                     item_id: purchaseID
                 }], function(err, results){});
-                console.log("_____________________________________");
-                console.log("Transaction Completed. Thankyou for shopping at BAMAZON");
-                console.log("_____________________________________");
+                console.log("");
+                console.log("");
+                console.log("");
+                console.log("");
+                console.log("*************************************");
+                console.log("");
+                console.log("      Transaction Completed");
+                console.log(" Thankyou for shopping at BAMAZON");
+                console.log("");
+                console.log("*************************************");
+                                
                 startShopping();
             break;
 
@@ -187,8 +162,3 @@ function confirmOrder(newStock, purchaseId) {
     });
 
 }
-
-
-
-
- 

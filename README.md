@@ -35,4 +35,4 @@
     <img src="assets/Screen Shot 2019-09-20 at 8.53.15 PM.png" width="400px"</img> 
 </div>
 
-<a href="https://youtu.be/6JOUxcTCEw0" target="/blank">Take a look</a>
+<a href="https://youtu.be/6JOUxcTCEw0" target="_blank">Take a look</a>

@@ -1,7 +1,5 @@
 # BamazonApp
 
-Checkout : https://youtu.be/6JOUxcTCEw0
-
 <h1>Overview</h1>
 
 <p>Bamazon is like an Amazon-like storefront created with MySQL and Node. </p>
@@ -36,3 +34,5 @@ Checkout : https://youtu.be/6JOUxcTCEw0
 <div align="center">
     <img src="assets/Screen Shot 2019-09-20 at 8.53.15 PM.png" width="400px"</img> 
 </div>
+
+<a href="https://youtu.be/6JOUxcTCEw0" target="/blank">Take a look</a>

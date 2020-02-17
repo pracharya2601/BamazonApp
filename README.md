@@ -23,16 +23,24 @@
 <p>Instead of continuing with the purchase. The other option on the list is to exit.</p>
 <p>Once exit is chosen. Exiting message is displayed and connection is ended. </p>
 
+<h2>Built With</h2>
+<ul>
+<li>Javascript</li>
+<li>Node.js</li>
+<li>NPM - Inquire</li>
+<li>NPM - MySQL</li>
+</ul>
+
 <div align="center">
-    <img src="assets/Screen Shot 2019-09-20 at 8.51.10 PM.png" width="400px"</img> 
+    <img src="assets/Screen Shot 2019-09-20 at 8.51.10 PM.png" width="400px">
 </div>
 
 <div align="center">
-    <img src="assets/Screen Shot 2019-09-20 at 8.51.44 PM.png" width="400px"</img> 
+    <img src="assets/Screen Shot 2019-09-20 at 8.51.44 PM.png" width="400px" 
 </div>
 
 <div align="center">
-    <img src="assets/Screen Shot 2019-09-20 at 8.53.15 PM.png" width="400px"</img> 
+    <img src="assets/Screen Shot 2019-09-20 at 8.53.15 PM.png" width="400px" 
 </div>
 
 <hr>
